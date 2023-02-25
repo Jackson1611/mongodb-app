@@ -1,17 +1,21 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+const routes = require("./routes");
+require("dotenv").config(); // Load environment variables from .env file
+
 const app = express();
-const path = require("path");
+app.use(bodyParser.json());
+app.use("/", routes);
+
+//MongoDB connection
 const mongoose = require("mongoose");
+const mongoURL = process.env.MONGO_URL;
+mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+const port = 3000;
 
-// Define a route handler for the default home page
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-// Start the server on port 3000
-app.listen(3000, () => {
-  console.log("Server started on port 3000");
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}.`);
 });
